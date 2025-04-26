@@ -16,18 +16,11 @@ export class ProjectService {
   async createProject(
     createProjectDto: CreateProjectDto,
   ): Promise<ProjectWithProductEntity> {
-    const { photos, product, ...rest } = createProjectDto;
+    const { product, ...rest } = createProjectDto;
 
     return this.prismaService.project.create({
       data: {
         ...rest,
-
-        photos: {
-          createMany: {
-            data: photos,
-          },
-        },
-
         products: {
           create: product.map((p) => ({
             name: p.name,
