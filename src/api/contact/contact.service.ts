@@ -8,6 +8,12 @@ import { EntityNotFoundException } from '../../utils/exception/entity-not-found.
 export class ContactService {
   constructor(private readonly prisma: PrismaService) {}
 
+  getUserContact(userId: string) {
+    return this.prisma.contact.findMany({
+      where: { userId },
+    });
+  }
+
   create(data: CreateContactDto, userId: string) {
     return this.prisma.contact.create({
       data: {

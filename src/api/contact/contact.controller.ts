@@ -6,7 +6,7 @@ import {
   Param,
   Delete,
   UseGuards,
-  Req,
+  Req, Get,
 } from '@nestjs/common';
 import { ContactService } from './contact.service';
 import { CreateContactDto } from './dto/create-contact.dto';
@@ -18,6 +18,11 @@ import { Request } from 'express';
 @UseGuards(AuthGuard())
 export class ContactController {
   constructor(private readonly contactService: ContactService) {}
+
+  @Get('/:userId')
+  getUserContacts(@Param('userId') userId: string) {
+    return this.contactService.getUserContact(userId);
+  }
 
   @UseGuards(AuthGuard())
   @Post()
