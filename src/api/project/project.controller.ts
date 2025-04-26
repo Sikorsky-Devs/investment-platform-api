@@ -4,8 +4,8 @@ import { CreateProjectDto } from './dto/create-project.dto';
 import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { ProjectWithProductEntity } from './entity/project-with-product.entity';
 
-@Controller('Project')
-@ApiTags('projects')
+@Controller('project')
+@ApiTags('Project')
 export class ProjectController {
   constructor(private readonly projectService: ProjectService) {}
 
