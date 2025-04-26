@@ -104,6 +104,7 @@ export class UserService {
       description: i.product.project.description,
       photoLink: i.product.project.photos.find((p) => p.isMain)?.link,
       productName: i.product.name,
+      investmentId: i.id,
       amount: i.amount,
       createdAt: i.createdAt,
     }));
