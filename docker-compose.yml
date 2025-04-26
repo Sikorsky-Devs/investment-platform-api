@@ -1,0 +1,42 @@
+services:
+  api:
+    image: stbasarab/equipua-api
+    restart: always
+    container_name: api
+    volumes:
+      - ~/static:/app/static
+    ports:
+      - "3005:4555"
+    env_file:
+      - ~/.env.api
+    depends_on:
+      - db
+  db:
+    image: postgres:15
+    restart: always
+    container_name: postgres-db
+    volumes:
+      - ~/postgres/data:/var/lib/postgresql/data
+    ports:
+      - "5553:5432"
+    env_file:
+      - ~/.env.postgres
+  
+  watchtower:
+    image: containrrr/watchtower
+    container_name: watchtower
+    restart: always
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    command: --interval 30
+  
+  web:
+    image: stbasarab/equipua-web
+    restart: always
+    container_name: web
+    ports:
+      - "3001:3000"
+    env_file:
+      - ~/.env.web
+    depends_on:
+      - api
