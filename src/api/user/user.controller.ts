@@ -50,7 +50,14 @@ export class UserController {
   }
 
   @Get('/:id/investments')
+  @UseGuards(AuthGuard())
   getProjects(@Param('id') id: string) {
     return this.userService.getUserInvestments(id);
+  }
+
+  @Get('/:id/chats')
+  @UseGuards(AuthGuard())
+  getUserChats(@Param('id') id: string) {
+    return this.userService.getUserChats(id);
   }
 }

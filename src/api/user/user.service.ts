@@ -108,4 +108,48 @@ export class UserService {
       createdAt: i.createdAt,
     }));
   }
+
+  async getUserChats(userId: string) {
+    const messages = await this.prisma.message.findMany({
+      where: {
+        OR: [{ senderId: userId }, { receiverId: userId }],
+      },
+      include: {
+        sender: {
+          omit: {
+            password: true,
+          },
+        },
+        receiver: {
+          omit: {
+            password: true,
+          },
+        },
+      },
+      orderBy: { createdAt: 'desc' },
+    });
+    const chats = [];
+    for (const message of messages) {
+      const chat = chats.find(
+        (c) =>
+          (c.senderId === message.senderId &&
+            c.receiverId === message.receiverId) ||
+          (c.senderId === message.receiverId &&
+            c.receiverId === message.senderId),
+      );
+      if (!chat) {
+        const entity =
+          userId === message.senderId ? message.receiver : message.sender;
+        chats.push({
+          userId: entity.id,
+          firstName: entity.firstName,
+          middleName: entity.middleName,
+          lastName: entity.lastName,
+          name: entity.name,
+          avatarLink: entity.avatarLink,
+        });
+      }
+    }
+    return chats;
+  }
 }
