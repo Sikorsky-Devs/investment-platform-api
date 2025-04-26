@@ -19,6 +19,7 @@ import { Request } from 'express';
 export class ContactController {
   constructor(private readonly contactService: ContactService) {}
 
+  @UseGuards(AuthGuard())
   @Post()
   create(@Body() createContactDto: CreateContactDto, @Req() req: Request) {
     return this.contactService.create(createContactDto, req['user'].id);
