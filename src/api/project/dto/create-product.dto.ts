@@ -1,13 +1,5 @@
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import {
-  IsArray,
-  IsNumber,
-  IsOptional,
-  IsString,
-  ValidateNested,
-} from 'class-validator';
-import { CreateInvestmentDto } from './create-investment.dto';
-import { Type } from 'class-transformer';
+import { ApiProperty } from '@nestjs/swagger';
+import { IsNumber, IsString } from 'class-validator';
 
 export class CreateProductDto {
   @ApiProperty()
@@ -17,11 +9,4 @@ export class CreateProductDto {
   @ApiProperty()
   @IsNumber()
   amount: number;
-
-  @ApiPropertyOptional({ type: () => [CreateInvestmentDto] })
-  @IsOptional()
-  @IsArray()
-  @ValidateNested({ each: true })
-  @Type(() => CreateInvestmentDto)
-  investments: CreateInvestmentDto[];
 }

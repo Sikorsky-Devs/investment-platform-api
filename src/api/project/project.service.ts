@@ -32,13 +32,22 @@ export class ProjectService {
           create: product.map((p) => ({
             name: p.name,
             amount: p.amount,
-            investments: {
-              createMany: {
-                data: p.investments,
-              },
-            },
           })),
         },
+      },
+      include: {
+        photos: true,
+        products: {
+          include: { investments: true },
+        },
+      },
+    });
+  }
+
+  getProjectById(projectId: string): Promise<ProjectWithProductEntity> {
+    return this.prismaService.project.findFirst({
+      where: {
+        id: projectId,
       },
       include: {
         photos: true,
