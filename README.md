@@ -1,32 +1,56 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+## Questly API
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+An API for the EquipUA web application.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## Features
 
-## Description
+- User registration and authentication (with email verification)
+- User profile management
+- Project creation with different types of tasks
+- Investment tracking
+- Investment management
+- Real-time communication for users
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
 
-## Project setup
+## Tech details
+- Multi-layered architecture with separation of concerns
+- RESTful API design
+- Patter repository for data access
+- Mappers for data transformation
+- Guards for authorization
+- Global exception filter
+
+## Tech stack
+- NestJS & Express
+- PrismaORM
+- PostgreSQL
+- Socket.io
+- JWT
+- Docker & Docker Compose
+- Node mailer
+- SMTP
+
+## WebSocket Integration
+
+Our project includes WebSocket support for real-time communication using socket.io. The WebSocket implementation enables users to join chat rooms, send messages, and leave rooms dynamically.
+
+### Events
+
+The WebSocket connection handles the following three events:
+
+- **join** – Allows a user to join a specific chat room.
+
+- **message** – Enables sending and receiving messages within the chat room.
+
+- **leave** – Notifies when a user leaves a chat room.
+
+## Installation
+
+```bash
+$ git clone https://github.com/Sikorsky-Devs/investment-platform-api.git
+
+$ cd investment-platform-api
+```
 
 ```bash
 $ yarn install
@@ -36,64 +60,125 @@ $ yarn install
 
 ```bash
 # development
-$ yarn run start
+$ yarn start
 
 # watch mode
-$ yarn run start:dev
+$ yarn start:dev
 
 # production mode
-$ yarn run start:prod
+$ yarn start:prod
 ```
 
-## Run tests
+## Swagger
+
+We have Swagger for the project.
+
+![image](https://github.com/user-attachments/assets/1de9f795-a700-4221-b61e-12402313324b)
+
+Public API documentation is available at http://51.120.120.77:3005/api
+
+
+## Environment variables
 
 ```bash
-# unit tests
-$ yarn run test
+DATABASE_URL=
+PORT=4555
 
-# e2e tests
-$ yarn run test:e2e
+FRONT_BASE_URL=http://localhost:3000
+BACK_BASE_URL=http://localhost:4555
 
-# test coverage
-$ yarn run test:cov
+SMTP_HOST=
+SMTP_USERNAME=
+SMTP_PASSWORD=
+
+SECRET=
+TTL=
 ```
 
 ## Deployment
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+First of all? we have dockerization for the project. Our Dockerfile is ready to use.
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+```dockerfile
+FROM node:20 AS builder
 
-```bash
-$ yarn install -g mau
-$ mau deploy
+WORKDIR /app
+
+COPY package.json yarn.lock ./
+
+RUN yarn install --frozen-lockfile
+
+COPY . .
+
+RUN yarn prisma generate &&  \
+    yarn build && \
+    mkdir static
+
+EXPOSE 4555
+
+CMD ["yarn", "start:prod"]
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+And we have docker-compose for the all project.
 
-## Resources
+```yml
+services:
+  api:
+    image: stbasarab/equipua-api
+    restart: always
+    container_name: api
+    volumes:
+      - ~/static:/app/static
+    ports:
+      - "3005:4555"
+    env_file:
+      - ~/.env.api
+    depends_on:
+      - db
+  db:
+    image: postgres:15
+    restart: always
+    container_name: postgres-db
+    volumes:
+      - ~/postgres/data:/var/lib/postgresql/data
+    ports:
+      - "5553:5432"
+    env_file:
+      - ~/.env.postgres
 
-Check out a few resources that may come in handy when working with NestJS:
+  watchtower:
+    image: containrrr/watchtower
+    container_name: watchtower
+    restart: always
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    command: --interval 30
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+  web:
+    image: stbasarab/equipua-web
+    restart: always
+    container_name: web
+    ports:
+      - "3001:3000"
+    env_file:
+      - ~/.env.web
+    depends_on:
+      - api
+```
 
-## Support
+Our backend is available on the Docker Hub. You can pull it from there.
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+```bash
+$ docker pull stbasarab/equipua-api
+```
 
-## Stay in touch
+Also we have a **GitHub Actions** workflow for the project. Questly API is automatically deployed to the Docker Hub when a new release is created.
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+<img width="1429" alt="image" src="https://github.com/user-attachments/assets/3fdd7f0b-6784-437e-828c-718763b92e90" />
 
-## License
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+We deploy our project to the **Google Cloud Platform**. We use the Google Cloud VM instance.
+
+![image](https://github.com/user-attachments/assets/4debf1fe-ce54-4d07-9352-7d29f8db6fe5)
+
+PUBLIC API LINK: http://51.120.120.77:3005/api
