@@ -16,7 +16,7 @@ import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { ProjectWithProductEntity } from './entity/project-with-product.entity';
 import { FindProjectsDto } from './dto/find-projects.dto';
 import { AuthGuard } from '../auth/guard/auth.guard';
-import { FileInterceptor } from '@nestjs/platform-express';
+import { FilesInterceptor } from '@nestjs/platform-express';
 
 @Controller('project')
 @ApiTags('Project')
@@ -37,7 +37,7 @@ export class ProjectController {
 
   @Post('/:projectId/photos/upload')
   @UseGuards(AuthGuard())
-  @UseInterceptors(FileInterceptor('files'))
+  @UseInterceptors(FilesInterceptor('files'))
   uploadPhotos(
     @UploadedFiles() files: Express.Multer.File[],
     @Param('projectId') projectId: string,
@@ -48,7 +48,7 @@ export class ProjectController {
 
   @ApiOkResponse({ type: ProjectWithProductEntity })
   @Get(':id')
-  async getProject(@Param('id') id: string) {
+  getProject(@Param('id') id: string) {
     return this.projectService.getProjectById(id);
   }
 }
