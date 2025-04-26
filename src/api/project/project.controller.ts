@@ -35,15 +35,19 @@ export class ProjectController {
     return this.projectService.getAllProjects(findProjectsDto);
   }
 
-  @Post('/:projectId/photos/upload')
+  @ApiOkResponse({
+    schema: {
+      type: 'array',
+      items: {
+        type: 'string',
+      },
+    },
+  })
+  @Post('/photos/upload')
   @UseGuards(AuthGuard())
   @UseInterceptors(FilesInterceptor('files'))
-  uploadPhotos(
-    @UploadedFiles() files: Express.Multer.File[],
-    @Param('projectId') projectId: string,
-    @Req() req: Request,
-  ) {
-    return this.projectService.uploadPhotos(files, projectId, req['user'].id);
+  uploadPhotos(@UploadedFiles() files: Express.Multer.File[]) {
+    return this.projectService.uploadPhotos(files);
   }
 
   @ApiOkResponse({ type: ProjectWithProductEntity })
