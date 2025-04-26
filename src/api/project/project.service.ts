@@ -1,13 +1,17 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateProjectDto } from './dto/create-project.dto';
 import { PrismaService } from '../../database/prisma.service';
 import { ProjectWithProductEntity } from './entity/project-with-product.entity';
 import { FindProjectsDto } from './dto/find-projects.dto';
 import { Prisma } from '@prisma/client';
+import { FileService } from '../../file/file.service';
 
 @Injectable()
 export class ProjectService {
-  constructor(private readonly prismaService: PrismaService) {}
+  constructor(
+    private readonly prismaService: PrismaService,
+    private readonly fileService: FileService,
+  ) {}
 
   async createProject(
     createProjectDto: CreateProjectDto,
@@ -81,5 +85,35 @@ export class ProjectService {
         },
       },
     });
+  }
+
+  async uploadPhotos(
+    files: Express.Multer.File[],
+    projectId: string,
+    userId: string,
+  ): Promise<string[]> {
+    const project = await this.prismaService.project.findFirst({
+      where: { id: projectId, userId },
+    });
+    if (!project) {
+      throw new NotFoundException(
+        `Project with id ${projectId} not found for this user`,
+      );
+    }
+
+    const fileLinks: string[] = [];
+    for (const file of files) {
+      const link = this.fileService.uploadFile(file);
+      fileLinks.push(link);
+    }
+    const photosData = fileLinks.map((link, index) => ({
+      projectId,
+      link,
+      isMain: index === 0,
+    }));
+    await this.prismaService.photo.createMany({
+      data: photosData,
+    });
+    return fileLinks;
   }
 }
