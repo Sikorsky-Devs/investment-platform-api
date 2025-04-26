@@ -8,6 +8,7 @@ import {
   ValidateNested,
 } from 'class-validator';
 import { $Enums } from '@prisma/client';
+import { CreatePhotoDto } from './create-photo.dto';
 import { Type } from 'class-transformer';
 import { CreateProductDto } from './create-product.dto';
 
@@ -41,6 +42,13 @@ export class CreateProjectDto {
   @ApiProperty()
   @IsString()
   userId: string;
+
+  @ApiPropertyOptional({ type: () => [CreatePhotoDto] })
+  @IsOptional()
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => CreatePhotoDto)
+  photos: CreatePhotoDto[];
 
   @ApiProperty({ type: () => [CreateProductDto] })
   @IsArray()
