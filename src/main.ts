@@ -10,8 +10,8 @@ async function bootstrap() {
   app.useStaticAssets(join(resolve(), '/static/'));
 
   const config = new DocumentBuilder()
-    .setTitle('UA Thrive API')
-    .setDescription('REST API for UA Thrive web application')
+    .setTitle('EquipUA API')
+    .setDescription('REST API for EquipUA web application')
     .setVersion('1.0')
     .build();
   const documentFactory = () => SwaggerModule.createDocument(app, config);
