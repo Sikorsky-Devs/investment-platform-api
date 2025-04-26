@@ -96,33 +96,12 @@ export class ProjectService {
     });
   }
 
-  async uploadPhotos(
-    files: Express.Multer.File[],
-    projectId: string,
-    userId: string,
-  ): Promise<string[]> {
-    const project = await this.prismaService.project.findFirst({
-      where: { id: projectId, userId },
-    });
-    if (!project) {
-      throw new NotFoundException(
-        `Project with id ${projectId} not found for this user`,
-      );
-    }
-
+  uploadPhotos(files: Express.Multer.File[]): string[] {
     const fileLinks: string[] = [];
     for (const file of files) {
       const link = this.fileService.uploadFile(file);
       fileLinks.push(link);
     }
-    const photosData = fileLinks.map((link, index) => ({
-      projectId,
-      link,
-      isMain: index === 0,
-    }));
-    await this.prismaService.photo.createMany({
-      data: photosData,
-    });
     return fileLinks;
   }
 }
