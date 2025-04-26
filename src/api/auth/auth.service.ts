@@ -44,12 +44,6 @@ export class AuthService {
       where: { email: signUpDto.email },
     });
     if (existsByEmail) throw new EntityAlreadyExistsException('User', 'email');
-    const existsByNickname = await this.prisma.user.findFirst({
-      where: { email: signUpDto.username },
-    });
-    if (existsByNickname) {
-      throw new EntityAlreadyExistsException('User', 'nickname');
-    }
     const token = await this.sendVerificationEmail(signUpDto.email);
     this.tempUsers.set(token, signUpDto);
   }
@@ -82,14 +76,11 @@ export class AuthService {
   async signIn(signInDto: SignInDto): Promise<string> {
     const user = await this.prisma.user.findFirst({
       where: {
-        OR: [
-          { email: signInDto.emailOrUsername },
-          { username: signInDto.emailOrUsername },
-        ],
+        email: signInDto.email,
       },
     });
     if (!user) {
-      throw new EntityNotFoundException('User', 'email or nickname');
+      throw new EntityNotFoundException('User', 'email');
     }
     const isPasswordValid = await bcrypt.compare(
       signInDto.password,

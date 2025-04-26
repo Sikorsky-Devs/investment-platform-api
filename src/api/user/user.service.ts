@@ -28,30 +28,27 @@ export class UserService {
     return { link };
   }
 
-  async update(userUpdateDto: UserUpdateDto, userId: string) {
-    const data: Prisma.UserUpdateInput = { username: userUpdateDto.username };
-    if (userUpdateDto.newPassword && userUpdateDto.currentPassword) {
+  async update(
+    { currentPassword, newPassword, ...dto }: UserUpdateDto,
+    userId: string,
+  ) {
+    const data: Prisma.UserUpdateInput = { ...dto };
+    if (newPassword && currentPassword) {
       const user = await this.prisma.user.findFirst({ where: { id: userId } });
       const isPasswordValid = await bcrypt.compare(
-        userUpdateDto.currentPassword,
+        currentPassword,
         user.password,
       );
       if (!isPasswordValid) {
         throw new PasswordIsNotValidException();
       }
-      data.password = await this.authService.hashPassword(
-        userUpdateDto.newPassword,
-      );
+      data.password = await this.authService.hashPassword(newPassword);
     }
     return this.prisma.user.update({
       where: { id: userId },
       data,
-      select: {
-        id: true,
-        email: true,
-        username: true,
-        role: true,
-        avatarLink: true,
+      omit: {
+        password: true,
       },
     });
   }
@@ -71,14 +68,8 @@ export class UserService {
   async deleteById(userId: string) {
     const user = await this.prisma.user.delete({
       where: { id: userId },
-      select: {
-        id: true,
-        email: true,
-        username: true,
-        role: true,
-        avatarLink: true,
-      },
     });
+    delete user.password;
     if (user.avatarLink) this.fileService.deleteFile(user.avatarLink);
     return user;
   }

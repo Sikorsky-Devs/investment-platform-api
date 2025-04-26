@@ -43,9 +43,13 @@ export function AuthGuard(role?: Role): Type<CanActivate> {
         select: {
           id: true,
           email: true,
-          username: true,
-          role: true,
+          firstName: true,
+          lastName: true,
+          middleName: true,
+          name: true,
+          isLegal: true,
           avatarLink: true,
+          role: true,
         },
       });
       if (!user) {
