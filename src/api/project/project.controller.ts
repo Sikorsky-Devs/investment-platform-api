@@ -2,13 +2,13 @@ import {
   Body,
   Controller,
   Get,
-  Param,
   Post,
   Query,
-  Req,
-  UploadedFiles,
+  Param,
   UseGuards,
   UseInterceptors,
+  UploadedFiles,
+  Req,
 } from '@nestjs/common';
 import { ProjectService } from './project.service';
 import { CreateProjectDto } from './dto/create-project.dto';
@@ -35,7 +35,7 @@ export class ProjectController {
     return this.projectService.getAllProjects(findProjectsDto);
   }
 
-  @Post('/:projectIdd/photos/upload')
+  @Post('/:projectId/photos/upload')
   @UseGuards(AuthGuard())
   @UseInterceptors(FileInterceptor('files'))
   uploadPhotos(
@@ -44,5 +44,11 @@ export class ProjectController {
     @Req() req: Request,
   ) {
     return this.projectService.uploadPhotos(files, projectId, req['user'].id);
+  }
+
+  @ApiOkResponse({ type: ProjectWithProductEntity })
+  @Get(':id')
+  async getProject(@Param('id') id: string) {
+    return this.projectService.getProjectById(id);
   }
 }

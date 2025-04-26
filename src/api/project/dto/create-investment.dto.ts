@@ -9,4 +9,8 @@ export class CreateInvestmentDto {
   @ApiProperty()
   @IsNumber()
   amount: number;
+
+  @ApiProperty()
+  @IsString()
+  productId: string;
 }
