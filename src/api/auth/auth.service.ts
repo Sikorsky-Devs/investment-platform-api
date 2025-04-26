@@ -26,7 +26,7 @@ export class AuthService {
     const token = v4();
     await this.mailService.send({
       to,
-      subject: 'Email verification on Questly.com',
+      subject: 'Email verification on Equip UA',
       message: 'Please click the link below to verify your email address:',
       link: `${process.env.FRONT_BASE_URL}/auth/approve-email/?token=${token}&email=${to}`,
     });

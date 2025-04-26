@@ -53,8 +53,14 @@ export class UserService {
     });
   }
 
-  async getMany() {
-    const users = await this.prisma.user.findMany({});
+  async getMany(email?: string) {
+    const users = await this.prisma.user.findMany({
+      where: {
+        email: {
+          startsWith: email,
+        },
+      },
+    });
     const result = [];
     for (const user of users) {
       if (user.role !== Role.ADMIN) {
@@ -72,5 +78,34 @@ export class UserService {
     delete user.password;
     if (user.avatarLink) this.fileService.deleteFile(user.avatarLink);
     return user;
+  }
+
+  async getUserInvestments(userId: string) {
+    const investments = await this.prisma.investment.findMany({
+      where: { userId },
+      include: {
+        product: {
+          include: {
+            project: {
+              include: {
+                photos: true,
+              },
+            },
+          },
+        },
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
+    });
+    return investments.map((i) => ({
+      id: i.product.project.id,
+      name: i.product.project.name,
+      description: i.product.project.description,
+      photoLink: i.product.project.photos.find((p) => p.isMain)?.link,
+      productName: i.product.name,
+      amount: i.amount,
+      createdAt: i.createdAt,
+    }));
   }
 }

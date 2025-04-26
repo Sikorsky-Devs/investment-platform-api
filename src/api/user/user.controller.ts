@@ -5,6 +5,7 @@ import {
   Get,
   Param,
   Patch,
+  Query,
   Req,
   UploadedFile,
   UseGuards,
@@ -37,14 +38,19 @@ export class UserController {
   }
 
   @Get()
-  @UseGuards(AuthGuard(Role.ADMIN))
-  getMany() {
-    return this.userService.getMany();
+  @UseGuards(AuthGuard())
+  getMany(@Query('email') email: string) {
+    return this.userService.getMany(email);
   }
 
   @Delete('/:id')
   @UseGuards(AuthGuard(Role.ADMIN))
   delete(@Param('id') id: string) {
     return this.userService.deleteById(id);
+  }
+
+  @Get('/:id/investments')
+  getProjects(@Param('id') id: string) {
+    return this.userService.getUserInvestments(id);
   }
 }
