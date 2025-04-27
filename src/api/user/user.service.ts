@@ -131,12 +131,10 @@ export class UserService {
     });
     const chats = [];
     for (const message of messages) {
-      const chat = chats.find(
-        (c) =>
-          (c.senderId === message.senderId &&
-            c.receiverId === message.receiverId) ||
-          (c.senderId === message.receiverId &&
-            c.receiverId === message.senderId),
+      const chat = chats.find((c) =>
+        userId === message.senderId
+          ? message.receiverId === c.userId
+          : message.senderId === c.userId,
       );
       if (!chat) {
         const entity =
