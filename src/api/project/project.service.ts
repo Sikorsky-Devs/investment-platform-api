@@ -52,7 +52,17 @@ export class ProjectService {
       include: {
         photos: true,
         products: {
-          include: { investments: true },
+          include: {
+            investments: {
+              include: {
+                user: {
+                  omit: {
+                    password: true,
+                  },
+                },
+              },
+            },
+          },
         },
       },
     });
