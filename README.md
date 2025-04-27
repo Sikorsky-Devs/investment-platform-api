@@ -1,4 +1,4 @@
-## Questly API
+## EquipUA API
 
 An API for the EquipUA web application.
 
