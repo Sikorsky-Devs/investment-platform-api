@@ -153,4 +153,13 @@ export class UserService {
     }
     return chats;
   }
+
+  async getUserById(userId: string) {
+    return this.prisma.user.findFirst({
+      where: { id: userId },
+      omit: {
+        password: true,
+      },
+    });
+  }
 }

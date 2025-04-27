@@ -60,4 +60,10 @@ export class UserController {
   getUserChats(@Param('id') id: string) {
     return this.userService.getUserChats(id);
   }
+
+  @Get('/:id')
+  @UseGuards(AuthGuard())
+  getUser(@Param('id') id: string) {
+    return this.userService.getUserById(id);
+  }
 }
